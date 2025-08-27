@@ -1,36 +1,149 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Symbiotek: AI Plant Companion App
 
-## Getting Started
+Symbiotek is a modern web application that connects real plant sensor data with an AI companion experience, helping users better understand and care for their plants.
 
-First, run the development server:
+## 🌱 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Real-time Plant Monitoring**
+  - Water level tracking
+  - Light level monitoring
+  - Dynamic threshold alerts
+  - Plant-specific care requirements
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Smart Dashboard**
+  - Visual status indicators
+  - Historical data charts
+  - Plant health overview
+  - Customizable plant profiles
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **User Authentication**
+  - Secure email/magic link login
+  - Personal plant collection
+  - User-specific settings
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Supabase Integration**
+  - Real-time data updates
+  - Secure data storage
+  - Row-level security
+  - Plant type management
 
-## Learn More
+## 🚀 Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend**
+  - Next.js 14
+  - React
+  - TypeScript
+  - Tailwind CSS
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Backend**
+  - Supabase
+  - PostgreSQL
+  - Row Level Security
+  - Real-time subscriptions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Authentication**
+  - Supabase Auth
+  - Magic link login
 
-## Deploy on Vercel
+## 📦 Installation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/NeptuneBeachGreenhouse/Symbiotek.git
+   cd Symbiotek
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Fill in your Supabase credentials:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   ```
+
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+## 🗄️ Database Setup
+
+1. Run the initial setup scripts in Supabase SQL Editor:
+   - `scripts/setup-basic-tables.sql`
+   - `scripts/fix-sensor-readings.sql`
+   - `scripts/fix-rls-policies.sql`
+
+2. Verify the setup:
+   - `scripts/verify-db-setup.sql`
+   - `scripts/inspect-tables.sql`
+
+## 📊 Data Structure
+
+- **Plant Types**: Different plant species and their care requirements
+- **User Plants**: User's personal plant collection
+- **Sensor Readings**: Real-time and historical sensor data
+- **Sensor Thresholds**: Plant-specific optimal ranges for various metrics
+
+## 🔐 Security
+
+- Row Level Security (RLS) policies ensure users can only access their own data
+- Secure authentication flow using Supabase
+- Environment variables for sensitive configuration
+- Type-safe database queries
+
+## 🧪 Development
+
+- **Running Tests**
+  ```bash
+  npm run test
+  ```
+
+- **Linting**
+  ```bash
+  npm run lint
+  ```
+
+- **Building for Production**
+  ```bash
+  npm run build
+  ```
+
+## 📱 Responsive Design
+
+The application is fully responsive and works on:
+- Desktop browsers
+- Tablets
+- Mobile devices
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Plant care data and thresholds based on botanical research
+- UI/UX inspired by modern design principles
+- Built with Supabase's excellent backend-as-a-service
+
+## 🔄 Status
+
+Project is: _in active development_
+
+## 📫 Contact
+
+Created by NeptuneBeachGreenhouse - feel free to contact us!
