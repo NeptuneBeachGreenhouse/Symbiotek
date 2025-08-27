@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="160" height="160" viewBox="0 0 160 160" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pot -->
+  <path fill="#D2B48C" d="M60 100 L100 100 L110 140 L50 140 Z" />
+  
+  <!-- Pot Face -->
+  <g transform="translate(70, 120)">
+    <!-- Eyes -->
+    <circle cx="5" cy="0" r="2" fill="#000" />
+    <circle cx="15" cy="0" r="2" fill="#000" />
+    <!-- Smile -->
+    <path d="M5 5 Q10 10 15 5" fill="none" stroke="#000" stroke-width="1.5" />
+  </g>
+  
+  <!-- Monstera Leaves -->
+  <g fill="#90EE90">
+    <!-- Left Leaf -->
+    <path d="M50 90 C40 80, 45 60, 60 50 C75 40, 90 45, 85 60 C80 75, 60 85, 50 90 Z" />
+    <!-- Right Leaf -->
+    <path d="M110 90 C120 80, 115 60, 100 50 C85 40, 70 45, 75 60 C80 75, 100 85, 110 90 Z" />
+    <!-- Center Leaf -->
+    <path d="M80 40 C70 30, 75 10, 80 5 C85 10, 90 30, 80 40 Z" />
+  </g>
+  
+  <!-- Leaf Details -->
+  <g stroke="#7CCD7C" fill="none" stroke-width="1">
+    <path d="M55 85 C45 75, 50 65, 65 55" />
+    <path d="M105 85 C115 75, 110 65, 95 55" />
+    <path d="M80 35 C75 25, 80 15, 80 10" />
+  </g>
+</svg>

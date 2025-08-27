@@ -1,0 +1,340 @@
+Product Requirement Document (PRD)
+Product Name: Symbiotek
+ Version: Draft v1.0
+ Date: August 11, 2025
+ Prepared By: Izzy, Seth, Nick
+
+1. Product Overview
+Description:
+ Plant Companion transforms plant care into a two-way, emotionally engaging relationship. Using a connected planter with embedded sensors for light and moisture, and an AI-powered mobile app, the product interprets a plant’s needs into an anthropomorphic personality. This “voice” communicates with users in real-time—via app notifications, ambient lighting cues on the pot, and historical care insights—creating a deep bond between human and plant while improving plant health outcomes.
+
+2. Product Vision & Goals
+Vision Statement:
+"Redefining Plant Care as a Wellness Experience Through Intelligent Connection with Nature"
+Primary Goals:
+Enable plants to “communicate” their needs in a conscious, emotionally resonant way.
+
+
+Provide actionable, data-driven care guidance in real-time.
+
+
+Foster user mindfulness, empathy, companionship, and joy in caring for living things.
+
+
+Secondary Goals:
+Enhance plant health and longevity.
+
+
+Build a scalable AI + IoT platform for future connected wellness products.
+
+
+Position the product in the premium wellness tech market.
+
+
+
+3. Target Audience
+Primary Segments:
+Millennials & Gen Z urban dwellers with an interest in wellness, houseplants, and smart home tech.
+
+
+Plant parents seeking deeper engagement and improved plant care.
+
+
+Secondary Segments:
+New plant owners who need guidance.
+
+
+Mindfulness enthusiasts who value nature-based well-being.
+
+
+
+4. Key Product Features
+4.1 Hardware Features (Smart Pot)
+Sensors:
+
+
+Soil Moisture Sensor (capacitive; ±5% accuracy)
+
+
+Light Intensity Sensor (lux measurement; ±5% accuracy)
+
+
+Ambient Feedback:
+
+
+LED strip or small indicator light to convey mood/status (colors and animations tied to plant “emotions”).
+
+
+Connectivity:
+
+
+Bluetooth Low Energy (BLE) for setup and real-time syncing.
+
+
+Optional Wi-Fi module for remote monitoring.
+
+
+Battery & Power:
+
+
+Rechargeable lithium-ion battery with USB-C charging (target 30-day battery life under normal use).
+
+
+Materials & Design:
+
+
+Minimal, modern aesthetic in matte finishes (white, terracotta, charcoal).
+
+
+
+4.2 Software Features (Mobile App)
+Core Functions:
+Real-Time Status Dashboard
+
+
+Displays moisture %, light exposure, and plant “mood.”
+
+
+Shows whether the plant needs water, more light, or protection from excess light.
+
+
+AI-Driven Plant Personality
+
+
+Natural language output based on sensor readings (“I’m feeling thirsty today 🌱💧”).
+
+
+Adjustable personality styles (calm, playful, scientific).
+
+
+Push Notifications & Reminders
+
+
+Alerts for watering needs, light adjustments, and care milestones.
+
+
+Customizable notification frequency (daily, weekly, critical only).
+
+
+Ambient Feedback Control
+
+
+Adjust LED color, brightness, or turn off from the app.
+
+
+Different light patterns for different needs (slow blue pulse = thirsty, bright yellow = too much sun).
+
+
+History & Insights
+
+
+Trend graphs for moisture and light over time.
+
+
+Care log with tips based on seasonal changes.
+
+
+User Customization
+
+
+Name your plant.
+Choose a plant type: tropical houseplant, cactus, vine
+
+
+Select or customize personality traits and “voice” tone.
+
+
+
+4.3 AI Layer
+Data Interpretation:
+
+
+Converts moisture/light sensor values into care recommendations using thresholds.
+
+
+Adjusts thresholds over time based on user care history and plant type.
+
+
+Personality Engine:
+
+
+Generates conversational, anthropomorphic responses.
+
+
+Integrates with OpenAI/GPT for dynamic interactions.
+
+
+Learning Component:
+
+
+Tracks user responsiveness and adjusts reminder frequency.
+
+
+Adapts plant personality based on interactions.
+
+
+
+
+
+
+5. Functional Requirements
+ID
+Requirement
+Priority
+HW-1
+Pot must detect soil moisture in % with ±5% accuracy.
+High
+HW-2
+Pot must detect light levels in lux.
+High
+HW-3
+Pot must transmit data to mobile app at least every 10 minutes via BLE.
+High
+HW-4
+Pot must support OTA firmware updates.
+Medium
+SW-1
+App must display real-time sensor readings in dashboard view.
+High
+SW-2
+App must generate personality-driven responses based on sensor data.
+High
+SW-3
+App must push notifications when thresholds are crossed.
+High
+SW-4
+App must allow naming and customizing plant personality.
+Medium
+SW-5
+App must log historical sensor data and display trends.
+Medium
+AI-1
+AI must convert raw sensor readings into natural language outputs.
+High
+AI-2
+AI must allow selectable personality modes.
+Medium
+AI-3
+AI must adapt notification frequency based on user behavior.
+Low
+
+
+6. User Stories
+As a plant owner, I want to see my plant’s moisture and light status so I know when to water or adjust light.
+
+
+As a busy user, I want the app to send me alerts only when necessary so I’m not overwhelmed with notifications.
+
+
+As a plant enthusiast, I want my plant to “talk” to me in a fun, friendly way so I feel more connected.
+
+
+As a new plant owner, I want clear, science-backed care advice so I can keep my plant healthy.
+
+
+As a designer-conscious user, I want the pot to be aesthetically pleasing so it fits into my home decor.
+
+
+
+7. Non-Functional Requirements
+Performance: App must update readings within 2 seconds of receiving BLE data.
+
+
+Security: All data transmitted between pot and app must be encrypted (AES-128 or higher).
+
+
+Reliability: Pot must operate in a range of 0°C–40°C.
+
+
+Scalability: System must support multiple pots per user account.
+
+
+Battery Life: Minimum 30 days between charges.
+
+
+
+8. Success Metrics
+User Engagement: DAU/WAU > 40%
+
+
+Plant Survival Rate: >20% improvement over baseline for users after 6 months.
+
+
+Retention: 6-month retention > 35%.
+
+
+Customer Satisfaction: Average rating ≥ 4.5/5 in app store.
+
+
+
+9. Competitive Advantage
+Combines scientific accuracy with emotional engagement through anthropomorphic AI.
+
+
+Full-stack integration of hardware and software for a seamless experience.
+
+
+Wellness-first positioning differentiates from purely functional plant sensors.
+
+
+
+10. Risks & Mitigations
+Risk
+Impact
+Mitigation
+Sensor drift over time
+Plant care recommendations become inaccurate
+Calibration algorithm + user prompts
+BLE connectivity issues
+Users can’t get real-time updates
+Add local storage on pot + auto-sync
+Users find personality gimmicky
+Reduced engagement
+Allow personality customization & on/off toggle
+Hardware cost too high
+Market adoption slower
+Tiered pricing, offer pot and sensor module separately
+
+
+11. Roadmap
+Phase 1 (MVP – 6 months)
+Moisture + light sensing pot with BLE connectivity.
+
+
+Mobile app with dashboard, notifications, and basic personality.
+
+
+Phase 2 (Enhancement – 6-12 months)
+Multiple personality modes, historical trends, customizable LED patterns.
+
+
+AI learning to adapt notifications.
+
+
+Phase 3 (Expansion – 12-18 months)
+Wi-Fi remote monitoring.
+
+
+Integration with smart home assistants (Alexa, Google Home).
+
+
+Multi-plant management features.
+
+
+
+12. Appendices
+Sensor Specification Sheet (to be determined by hardware vendor).
+
+
+App UI Wireframes (to be developed by design team).
+
+
+Sample AI Dialogue Scripts (early prototype examples).
+
+
+
+I can follow this by creating visual wireframes for the app flow and sample AI dialogue interactions so your PRD also doubles as a pitch deck element for investors.
+ That way, you’ll have both the specs and the emotional hook in one package.
+Do you want me to make the wireframes + sample AI plant dialogues next? That would bring the PRD to life visually and emotionally.
+
+
