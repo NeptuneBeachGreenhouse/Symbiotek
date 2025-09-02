@@ -27,7 +27,7 @@ export const AddPlantModal: React.FC<AddPlantModalProps> = ({ isOpen, onClose, o
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="newPlantName" className="block text-sm font-medium text-gray-300">
-              Plant's Name
+              Plant&apos;s Name
             </label>
             <input 
               id="newPlantName" 

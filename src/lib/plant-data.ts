@@ -3,12 +3,12 @@ import { Plant, PlantType, Personality } from '@/types';
 
 export async function getUserPlants(): Promise<Plant[]> {
   // First, always get the test plant (available to everyone)
-  const { data: testPlants, error: testError } = await supabase
+  const { data: testPlants } = await supabase
     .from('user_plants')
     .select('*')
     .eq('name', 'Test Monstera');
 
-  let allPlants: any[] = testPlants || [];
+  let allPlants: unknown[] = testPlants || [];
 
   // If user is authenticated, also get their personal plants
   const { data: { user } } = await supabase.auth.getUser();
@@ -27,8 +27,8 @@ export async function getUserPlants(): Promise<Plant[]> {
   }
 
   // Get sensor readings for all plants
-  const plantsWithReadings = await Promise.all(
-    allPlants.map(async (plant) => {
+  const plantsWithReadings =         await Promise.all(
+          allPlants.map(async (plant: Record<string, unknown>) => {
       const { data: readings } = await supabase
         .from('sensor_readings')
         .select('sensor_type, value, timestamp')

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserPlants, createPlant, updatePlant, deletePlant, getPlantHistory, addSensorReading } from '@/lib/plant-data';
 import { Plant, PlantType, Personality } from '@/types';
@@ -35,7 +35,6 @@ export default function Home() {
   const { user, loading } = useAuth();
   const [plants, setPlants] = useState<Plant[]>([]);
   const [activePlantId, setActivePlantId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<Record<string, boolean>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const activePlant = useMemo(() => plants.find(p => p.id === activePlantId), [plants, activePlantId]);
@@ -80,7 +79,7 @@ export default function Home() {
         });
       }
     }
-  }, [activePlant?.id, plants.length]);
+  }, [activePlant?.id]);
 
   // Simulate sensor updates
   useEffect(() => {
@@ -144,7 +143,7 @@ export default function Home() {
       clearInterval(interval);
       clearInterval(historyInterval);
     };
-  }, [activePlant, plants]);
+  }, [activePlant?.id]);
 
   const handleUpdatePlant = async (id: string, updates: Partial<Plant>) => {
     try {
@@ -256,7 +255,7 @@ export default function Home() {
                   <div className="space-y-4">
                     <div>
                       <label htmlFor="plantName" className="block text-sm font-medium text-gray-300">
-                        Plant's Name
+                        Plant&apos;s Name
                       </label>
                       <input
                         type="text"
@@ -299,7 +298,7 @@ export default function Home() {
           ) : (
             <div className="lg:col-span-3 text-center py-16">
               <h2 className="text-2xl font-bold text-gray-300">Welcome to Symbiotek!</h2>
-              <p className="text-gray-400 mt-2 mb-6">You don't have any plants yet. Let's add your first one.</p>
+              <p className="text-gray-400 mt-2 mb-6">You don&apos;t have any plants yet. Let&apos;s add your first one.</p>
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg transition-colors"

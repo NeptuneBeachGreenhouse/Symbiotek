@@ -38,7 +38,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ plant, isLoading, careStat
         {isLoading ? (
           <div className="animate-pulse text-gray-400">Thinking...</div>
         ) : (
-          <p className="text-lg italic text-gray-200">"{plant?.status || 'No status available'}"</p>
+                           <p className="text-lg italic text-gray-200">&quot;{plant?.status || 'No status available'}&quot;</p>
         )}
       </div>
 
