@@ -79,7 +79,7 @@ export default function Home() {
         });
       }
     }
-  }, [activePlant?.id]);
+  }, [activePlant, plants.length]);
 
   // Simulate sensor updates
   useEffect(() => {
@@ -143,7 +143,7 @@ export default function Home() {
       clearInterval(interval);
       clearInterval(historyInterval);
     };
-  }, [activePlant?.id]);
+  }, [activePlant, plants]);
 
   const handleUpdatePlant = async (id: string, updates: Partial<Plant>) => {
     try {

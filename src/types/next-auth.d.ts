@@ -1,4 +1,4 @@
-import type { DefaultSession } from "next-auth"
+// NextAuth type extensions
 
 declare module "next-auth" {
   interface Session {

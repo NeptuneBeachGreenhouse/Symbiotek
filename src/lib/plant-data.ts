@@ -138,7 +138,7 @@ export async function updatePlant(
   updates: Partial<Plant>
 ): Promise<void> {
   // Only include fields that are actually being updated
-  const updateData: Record<string, any> = {};
+  const updateData: Record<string, unknown> = {};
   
   if (updates.name !== undefined) updateData.name = updates.name;
   if (updates.plantType !== undefined) updateData.plant_type = updates.plantType;
