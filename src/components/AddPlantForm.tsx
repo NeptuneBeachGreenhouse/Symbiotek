@@ -21,10 +21,25 @@ export default function AddPlantForm({ onPlantCreated }: AddPlantFormProps) {
     setIsSubmitting(true);
 
     try {
-      const plant = await createPlant(plantName, parseInt(plantType));
+      if (!plantName.trim()) {
+        throw new Error('Plant name is required');
+      }
+      
+      const plant = await createPlant(plantName.trim(), parseInt(plantType));
+      if (!plant) {
+        throw new Error('Failed to create plant');
+      }
+      
       setIsOpen(false);
       setPlantName('');
       onPlantCreated();
+      
+      // Show success message
+      const successMessage = document.createElement('div');
+      successMessage.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg';
+      successMessage.textContent = `${plantName} has been added successfully!`;
+      document.body.appendChild(successMessage);
+      setTimeout(() => successMessage.remove(), 3000);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

@@ -1,75 +1,83 @@
 import { supabase } from './supabase-client';
-
-export interface PlantReading {
-  sensor_type: 'soil_moisture' | 'temperature' | 'humidity' | 'light';
-  value: number;
-  timestamp: string;
-}
-
-export interface Plant {
-  id: string;
-  name: string;
-  plant_type_id: number;
-  latest_readings?: PlantReading[];
-}
+import { Plant, PlantType, Personality } from '@/types';
 
 export async function getUserPlants(): Promise<Plant[]> {
-  const { data: plants, error } = await supabase
+  // First, always get the test plant (available to everyone)
+  const { data: testPlants, error: testError } = await supabase
     .from('user_plants')
-    .select(`
-      *,
-      latest_readings (
-        sensor_type,
-        value,
-        timestamp
-      )
-    `);
+    .select('*')
+    .eq('name', 'Test Monstera');
 
-  if (error) {
-    console.error('Error fetching plants:', error);
-    return [];
+  let allPlants: any[] = testPlants || [];
+
+  // If user is authenticated, also get their personal plants
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: userPlants, error: userError } = await supabase
+      .from('user_plants')
+      .select('*')
+      .eq('user_id', user.id);
+
+    if (!userError && userPlants) {
+      // Combine test plants and user plants, avoiding duplicates
+      const userPlantIds = new Set(userPlants.map(p => p.id));
+      const uniqueTestPlants = allPlants.filter(p => !userPlantIds.has(p.id));
+      allPlants = [...uniqueTestPlants, ...userPlants];
+    }
   }
 
-  return plants || [];
+  // Get sensor readings for all plants
+  const plantsWithReadings = await Promise.all(
+    allPlants.map(async (plant) => {
+      const { data: readings } = await supabase
+        .from('sensor_readings')
+        .select('sensor_type, value, timestamp')
+        .eq('plant_id', plant.id)
+        .order('timestamp', { ascending: false })
+        .limit(2); // Get latest moisture and light readings
+
+      return {
+        ...plant,
+        latest_readings: readings || []
+      };
+    })
+  );
+
+  // Transform the data to match our Plant interface
+  return plantsWithReadings.map(dbPlant => ({
+    id: dbPlant.id,
+    name: dbPlant.name,
+    plantType: dbPlant.plant_type as PlantType,
+    personality: dbPlant.personality as Personality || Personality.PLAYFUL,
+    moisture: dbPlant.latest_readings?.find((r: { sensor_type: string }) => r.sensor_type === 'soil_moisture')?.value || 50,
+    light: dbPlant.latest_readings?.find((r: { sensor_type: string }) => r.sensor_type === 'light')?.value || 12000,
+    status: dbPlant.status || "I'm new here! Can't wait to grow with you.",
+    history: []  // We'll load this separately when needed
+  }));
 }
 
-export async function createPlant(name: string, plantTypeId: number): Promise<Plant | null> {
+export async function createPlant(
+  name: string,
+  plantType: PlantType,
+  personality: Personality = Personality.PLAYFUL
+): Promise<Plant | null> {
   try {
-    // Get the current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     
-    if (userError || !user) {
-      console.error('Auth error:', userError);
-      throw new Error('Not authenticated');
-    }
+    // For demo mode, allow creating plants without auth (they'll be public demo plants)
+    const userId = user?.id || null;
 
-    // First verify the plant type exists
-    const { data: plantType, error: plantTypeError } = await supabase
-      .from('plant_types')
-      .select('id, name')
-      .eq('id', plantTypeId)
-      .single();
-
-    if (plantTypeError) {
-      console.error('Error verifying plant type:', plantTypeError);
-      throw new Error(`Plant type error: ${plantTypeError.message}`);
-    }
-
-    if (!plantType) {
-      throw new Error(`Plant type not found: ${plantTypeId}`);
-    }
-
-    console.log('Creating plant:', { name, plantTypeId, userId: user.id });
-
-    // Create the plant with current timestamp
+    // Create the plant
     const created_at = new Date().toISOString();
     const { data: plant, error: insertError } = await supabase
       .from('user_plants')
       .insert([{ 
-        name, 
-        plant_type_id: plantTypeId,
-        user_id: user.id,
-        created_at
+        name,
+        plant_type: plantType,
+        personality,
+        user_id: userId,
+        created_at,
+        status: "I'm new here! Can't wait to grow with you."
       }])
       .select('*')
       .single();
@@ -83,20 +91,13 @@ export async function createPlant(name: string, plantTypeId: number): Promise<Pl
       throw new Error('No plant returned after insert');
     }
 
-    console.log('Plant created:', plant);
-
-    // Define the sensor type enum
-    type SensorType = 'soil_moisture' | 'temperature' | 'humidity' | 'light';
-    
-    // Create initial readings one at a time for better error tracking
-    const readingTypes: Array<{type: SensorType, value: number}> = [
+    // Create initial readings
+    const initialReadings = [
       { type: 'soil_moisture', value: 65 + (Math.random() * 20 - 10) },
-      { type: 'temperature', value: 70 + (Math.random() * 10 - 5) },
-      { type: 'humidity', value: 55 + (Math.random() * 30 - 15) },
-      { type: 'light', value: 750 + (Math.random() * 500 - 250) }
+      { type: 'light', value: 12000 + (Math.random() * 4000 - 2000) }
     ];
 
-    for (const reading of readingTypes) {
+    for (const reading of initialReadings) {
       const { error: readingError } = await supabase
         .from('sensor_readings')
         .insert([{
@@ -107,12 +108,20 @@ export async function createPlant(name: string, plantTypeId: number): Promise<Pl
 
       if (readingError) {
         console.error(`Error inserting ${reading.type} reading:`, readingError);
-        throw new Error(`Sensor reading error (${reading.type}): ${readingError.message}`);
       }
     }
 
-    console.log('All readings created successfully');
-    return plant;
+    // Return the plant in our new format
+    return {
+      id: plant.id,
+      name: plant.name,
+      plantType: plant.plant_type as PlantType,
+      personality: plant.personality as Personality,
+      moisture: initialReadings[0].value,
+      light: initialReadings[1].value,
+      status: plant.status,
+      history: []
+    };
 
   } catch (err) {
     if (err instanceof Error) {
@@ -120,48 +129,114 @@ export async function createPlant(name: string, plantTypeId: number): Promise<Pl
     } else {
       console.error('Unexpected error creating plant:', err);
     }
-    throw err; // Re-throw to handle in the component
+    throw err;
   }
 }
 
-export async function refreshPlantData(plantId: string): Promise<void> {
-  const { error } = await supabase.rpc('generate_mock_readings', { p_plant_id: plantId });
+export async function updatePlant(
+  plantId: string,
+  updates: Partial<Plant>
+): Promise<void> {
+  // Only include fields that are actually being updated
+  const updateData: Record<string, any> = {};
+  
+  if (updates.name !== undefined) updateData.name = updates.name;
+  if (updates.plantType !== undefined) updateData.plant_type = updates.plantType;
+  if (updates.personality !== undefined) updateData.personality = updates.personality;
+  if (updates.status !== undefined) updateData.status = updates.status;
+
+  // Only proceed if there are actual updates
+  if (Object.keys(updateData).length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from('user_plants')
+    .update(updateData)
+    .eq('id', plantId);
+
   if (error) {
-    console.error('Error refreshing plant data:', error);
+    console.error('Error updating plant:', error);
+    throw new Error(`Failed to update plant: ${error.message}`);
   }
 }
 
-// Subscribe to real-time updates for a plant's sensor readings
-export function subscribeToPlantReadings(
-  plantId: string, 
-  onUpdate: (readings: PlantReading[]) => void
-): (() => void) {
-  const subscription = supabase
-    .channel(`plant-${plantId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'sensor_readings',
-        filter: `plant_id=eq.${plantId}`
-      },
-      async (payload) => {
-        // Fetch latest readings when new data arrives
-        const { data } = await supabase
-          .from('latest_readings')
-          .select('*')
-          .eq('plant_id', plantId);
-        
-        if (data) {
-          onUpdate(data);
-        }
-      }
-    )
-    .subscribe();
+export async function deletePlant(plantId: string): Promise<void> {
+  const { error } = await supabase
+    .from('user_plants')
+    .delete()
+    .eq('id', plantId);
 
-  // Return unsubscribe function
-  return () => {
-    subscription.unsubscribe();
-  };
+  if (error) {
+    console.error('Error deleting plant:', error);
+    throw new Error(`Failed to delete plant: ${error.message}`);
+  }
+}
+
+export async function getPlantHistory(plantId: string): Promise<Plant['history']> {
+  const { data, error } = await supabase
+    .from('sensor_readings')
+    .select('*')
+    .eq('plant_id', plantId)
+    .order('timestamp', { ascending: true }) // Changed to ascending for chronological order
+    .limit(200); // Increased limit to get more history
+
+  if (error) {
+    console.error('Error fetching plant history:', error);
+    return [];
+  }
+
+  // Group readings by similar timestamps (within 1 hour) and transform to our history format
+  const historyMap = new Map();
+  data.forEach(reading => {
+    // Round timestamp to nearest hour for grouping
+    const roundedTime = Math.floor(new Date(reading.timestamp).getTime() / (1000 * 60 * 60)) * (1000 * 60 * 60);
+    
+    if (!historyMap.has(roundedTime)) {
+      historyMap.set(roundedTime, {
+        timestamp: roundedTime,
+        moisture: 0,
+        light: 0,
+        status: ''
+      });
+    }
+    const entry = historyMap.get(roundedTime);
+    if (reading.sensor_type === 'soil_moisture') {
+      entry.moisture = reading.value;
+    } else if (reading.sensor_type === 'light') {
+      entry.light = reading.value;
+    }
+  });
+
+  // Convert to array and sort by timestamp
+  return Array.from(historyMap.values())
+    .filter(entry => entry.moisture > 0 || entry.light > 0) // Only include entries with data
+    .sort((a, b) => a.timestamp - b.timestamp);
+}
+
+// Function to add sensor readings for testing/demo purposes
+export async function addSensorReading(
+  plantId: string,
+  sensorType: 'soil_moisture' | 'light',
+  value: number
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('sensor_readings')
+      .insert([{
+        plant_id: plantId,
+        sensor_type: sensorType,
+        value: value,
+        timestamp: new Date().toISOString()
+      }]);
+
+    if (error) {
+      console.error('Error adding sensor reading:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error adding sensor reading:', error);
+    return false;
+  }
 }
