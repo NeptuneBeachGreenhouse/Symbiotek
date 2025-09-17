@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth/next';
 import GoogleProvider from 'next-auth/providers/google';
-import { Session, JWT } from 'next-auth';
-
+import type { JWT } from 'next-auth/jwt';
 const authOptions = {
   providers: [
     GoogleProvider({
@@ -13,14 +12,12 @@ const authOptions = {
     signIn: '/auth/signin',
   },
   callbacks: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    session: ({ session, token }: { session: Session; token: JWT }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.sub,
-      },
-    }),
+    async session({ session, token }: { session: any; token: JWT }) {
+      if (session.user && token?.sub) {
+        (session.user as any).id = token.sub as string;
+      }
+      return session;
+    },
   },
 };
 
